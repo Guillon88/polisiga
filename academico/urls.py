@@ -12,10 +12,12 @@ app_name = 'academico'
 
 urlpatterns = [
     path('',views.index, name='index'),
-    path('plan/<int:pk>', views.AsignaturaPlanDetailView.as_view(), name='asignatura_plan_detail'),
     path('asignatura/', views.AsignaturaTableView.as_view(), name='asignatura_list'),
     path('asignatura/<int:pk>/', views.asignatura_detail_view, name='asignatura_detail_view'),
     path('asignatura/<int:pk>/plan/', views.AsignaturaPlanView.as_view(), name='asignatura_plan_list'),
+    path('asignatura/<int:asignatura_pk>/plan/<int:pk>/', views.AsignaturaPlanDetailView.as_view(), name='asignatura_plan_detail'),
+    path('asignatura/<int:asignatura_pk>/plan/create/', views.asignatura_plan_create_view, name='asignatura_plan_create'),
+    path('asignatura/<int:asignatura_pk>/plan/<int:plan_pk>/edit/', views.asignatura_plan_edit_view, name='asignatura_plan_edit'),
     path('carrera/', CarreraListView.as_view(), name="carrera_list"),
     path('carrera/<int:pk>/', CarreraDetailView.as_view(), name='carrera_detail'),
     path('carrera/<int:pk>/asignatura/', CarreraAsignaturaView.as_view(), name='carrera_asignatura_list'),
@@ -33,6 +35,7 @@ urlpatterns = [
     path('documento/<int:pk>/update/', views.DocumentoUpdateView.as_view(), name='documento_update'),
     path('estudiante/', views.estudiante_list, name='estudiante_list'),
     path('estudiante/<int:pk>/', views.estudiante_detail, name='estudiante_detail'),
+
     path('registrocatedra/<int:pk>/', views.registrocatedra_detail_view, name='registrocatedra_detail_view'),
     path('registrocatedra/<int:pk>/edit/', views.registrocatedra_edit_view, name='registrocatedra_edit_view')
 

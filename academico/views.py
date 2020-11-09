@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-
+from django.forms import formset_factory
+from django.forms import modelformset_factory
+from django.http import HttpResponseRedirect
 from django.shortcuts import (
     get_list_or_404,
     get_object_or_404,
@@ -34,7 +36,9 @@ from .filters import (
 )
 
 from .forms import (
-    RegistroCatedraForm
+    AsignaturaPlanCreateForm,
+    AsignaturaPlanContenidoForm,
+    RegistroCatedraForm,
 )
 from .tables import (
     AsignaturaTable,
@@ -102,6 +106,76 @@ class AsignaturaPlanView(SingleTableView):
 class AsignaturaPlanDetailView(DetailView):
     model = Plan
     template_name = "academico/asignatura_plan_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.plan = Plan.objects.get(pk=self.kwargs['pk'])
+        self.asignatura = Asignatura.objects.get(pk=self.kwargs['asignatura_pk'])
+        return super(AsignaturaPlanDetailView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["titulo"] = "Detalle de plan " + str(self.plan.year) + " de " + str(self.asignatura)
+        context["asignatura"] = self.asignatura
+        context['plan'] = self.plan
+
+        return context
+
+def asignatura_plan_create_view(request,asignatura_pk):
+    context = {}
+    asignatura = Asignatura.objects.get(pk=asignatura_pk)
+    form = AsignaturaPlanCreateForm(request.POST or None)
+    if form.is_valid():
+
+        plan = form.save(commit=False)
+        plan.asignatura = asignatura
+
+        plan.save()
+        return redirect('academico:asignatura_plan_list', asignatura_pk)
+        
+        
+    context['form'] = form
+    context['asignatura'] = asignatura
+    return render(request, 'academico/asignatura_plan_create.html', context)
+
+
+def asignatura_plan_edit_view(request, plan_pk, asignatura_pk):
+    context = {}
+    asignatura = Asignatura.objects.get(pk=asignatura_pk)
+    plan = Plan.objects.get(pk=plan_pk)
+
+    AsignaturaPlanContenidoFormSet = modelformset_factory(Contenido, fields=['titulo'], extra=8)
+    
+    if request.method == "POST":
+        formset = AsignaturaPlanContenidoFormSet(
+            request.POST, request.FILES,
+            queryset=Contenido.objects.filter(plan=plan))
+        if formset.is_valid():
+            contenido_formset = formset.save(commit = False)
+            for contenido_form in contenido_formset:
+                contenido_form.plan_id = plan_pk
+                contenido_form.save()
+
+
+            return HttpResponseRedirect(plan.get_absolute_url())
+    else:
+        formset = AsignaturaPlanContenidoFormSet(queryset=Contenido.objects.filter(plan=plan))
+
+    context['titulo'] = "Editar Plan"
+    context['asignatura'] = asignatura
+    context['plan'] = plan
+    context['formset'] = formset
+
+    return render(request, 'academico/asignatura_plan_edit.html', context)
+
+
+class AsignaturaPlanCreateView(CreateView):
+    model = Plan
+    fields = [
+        'asignatura',
+        'year',
+    ]
+    template_name = 'academico/asignatura_plan_create.html'
+    success_message = "Plan creado exitosamente."
 
 def asignatura_detail_view(request, pk):
     asignatura = get_object_or_404(Asignatura, pk=pk)

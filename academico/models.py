@@ -384,7 +384,7 @@ class Plan(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('academico:asignatura_plan_detail', kwargs={'pk': self.pk})
+        return reverse('academico:asignatura_plan_detail', kwargs={'pk': self.pk,'asignatura_pk': self.asignatura.pk})
 
     def __str__(self):
         if self.asignatura is None:

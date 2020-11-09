@@ -1,7 +1,5 @@
 {% extends 'adminlte/base.html' %}
-{% load render_table from django_tables2 %}
-{% load bootstrap4 %}
-
+{% load crispy_forms_tags %}
 
 {% block content_header %}
 <div class="content-header">
@@ -17,7 +15,8 @@
           <li class="breadcrumb-item"><a href="{% url 'academico:carrera_detail' asignatura.carrera.pk %}">{{ asignatura.carrera.siglas }}</a></li>
           <li class="breadcrumb-item"><a href="{% url 'academico:carrera_asignatura_list' asignatura.carrera.pk %}">Asignaturas</a></li>
           <li class="breadcrumb-item"><a href="{% url 'academico:asignatura_detail_view' asignatura.pk %}">{{ asignatura.nombre }}</a></li>
-          <li class="breadcrumb-item active">Planes</li>
+          <li class="breadcrumb-item"><a href="{% url 'academico:asignatura_plan_list' asignatura.pk %}">Planes</a></li>
+          <li class="breadcrumb-item active">{{ plan.year }}</li>
         </ol>
       </div>
     </div>
@@ -28,34 +27,39 @@
 
 {% block content %}
 
-  <div class="row">
-    <div class="col-12">
-      <a href="{% url 'academico:asignatura_plan_create' asignatura.pk %}" class="btn btn-primary mb-2">Agregar Plan</a>
-    </div>
-  </div>
 
+<form method="POST" enctype="multipart/form-data">
+    <!-- Default card -->
 <div class="row">
     <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-tools">
-            {% if filter %}
-                <form action="" method="get" class="form form-inline">
-                    {% bootstrap_form filter.form layout='inline' %}
-                    {% bootstrap_button 'filtrar' %}
-                </form>
-            {% endif %}
-          </div>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body table-responsive p-0">
 
-          
-          {% render_table table %}
+    <div class="card">
+        <div class="card-header with-border">
         </div>
-        <!-- /.card-body -->
-      </div>
-      <!-- /.card -->
+        <div class="card-body">
+            <h3>Contenidos</h3>
+ 
+         
+            {{ formset.management_data }} 
+            {% csrf_token %} 
+            {{ formset|crispy }} 
+             
+        
+
+        </div><!-- /.card-body -->
+        <div class="card-footer">
+            Footer
+        </div><!-- /.card-footer-->
+    </div><!-- /.card -->
+
+  </div>
+</div>
+
+  <div class="row">
+    <div class="col-12">
+      <button type="submit" class="btn btn-success">Submit</button>
     </div>
   </div>
+
+</form> 
 {% endblock %}

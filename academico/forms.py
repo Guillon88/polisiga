@@ -10,6 +10,7 @@ from .models import (
     Catedra,
     Contenido,
     Docente,
+    Plan,
     RegistroCatedra,
 )
 
@@ -24,6 +25,18 @@ class FechaWidget(forms.widgets.TextInput):
             'admin-lte/plugins/moment/moment-with-locales.min.js',)
 
     template_name = 'widgets/fecha.html'
+
+
+class AsignaturaPlanCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Plan
+        fields = ['year']
+
+class AsignaturaPlanContenidoForm(forms.ModelForm):
+    class Meta:
+        model = Contenido
+        fields = ['titulo']
 
 class CatedraForm(forms.ModelForm):
 

@@ -1,4 +1,5 @@
 {% extends 'adminlte/base.html' %}
+{% load static %}
 
 
 {% block content_header %}
@@ -6,7 +7,7 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0 text-dark">{{ titulo }}</h1>
+        <h1 class="m-0 text-dark">Crear Nuevo Plan de {{ asignatura }}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
@@ -16,7 +17,7 @@
           <li class="breadcrumb-item"><a href="{% url 'academico:carrera_asignatura_list' asignatura.carrera.pk %}">Asignaturas</a></li>
           <li class="breadcrumb-item"><a href="{% url 'academico:asignatura_detail_view' asignatura.pk %}">{{ asignatura.nombre }}</a></li>
           <li class="breadcrumb-item"><a href="{% url 'academico:asignatura_plan_list' asignatura.pk %}">Planes</a></li>
-          <li class="breadcrumb-item active">{{ plan.year }}</li>
+          <li class="breadcrumb-item active">Crear</li>
         </ol>
       </div>
     </div>
@@ -24,33 +25,23 @@
 </div>
 {% endblock %}
 
-
 {% block content %}
 
-  <div class="row">
-    <div class="col-12">
-      <a href="{% url 'academico:asignatura_plan_edit' asignatura.pk plan.pk %}" class="btn btn-primary mb-2">Editar</a>
-    </div>
-  </div>
-
     <!-- Default card -->
-<div class="row">
-    <div class="col-12">
+<form method="post">{% csrf_token %}
     <div class="card">
         <div class="card-header with-border">
         </div>
-        <div class="card-body">
-            <h3>Contenidos</h3>
-            <ul>
-            {% for contenido in object.contenido_set.all %}
-                <li>{{ contenido }}</li>
-            {% endfor%}
-            </ul>
+        <div class="card-body">           
+                {{ form.as_p }}
         </div><!-- /.card-body -->
         <div class="card-footer">
-            Footer
+            <input class="btn btn-success float-right" type="submit" value="Guardar">
         </div><!-- /.card-footer-->
     </div><!-- /.card -->
-  </div>
-</div>
+</form>
 {% endblock %}
+
+
+
+
